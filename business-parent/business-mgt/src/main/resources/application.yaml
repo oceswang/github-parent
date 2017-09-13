@@ -1,0 +1,42 @@
+debug: true
+server:
+  context-path: /
+  port: 8901
+  tomcat:
+    access_log_enabled: true
+eureka:
+  instance:
+    hostname: user
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka
+feign:
+  hystrix:
+    enabled: true
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8.0.
+  application:
+    name: business-mgt    
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    content-type: text/html
+    cache: false 
+swagger:
+  basePackage: com.github.mgt.core.web
+  title: Mangement System RESTful API
+  desc: Mangement System RESTFUL API
+  serviceUrl: http://www.galaxyinternet.com
+  version: 1.0
+
+oauth:
+  authLocation: http://authserver.com/sso/authorize
+  tokenLocation: http://authserver.com/sso/token
+  meLocation: http://authserver.com/sso/me
+  client_id: 2
+  client_secret: 222
+  redirect_uri: http://magement.com:8901/

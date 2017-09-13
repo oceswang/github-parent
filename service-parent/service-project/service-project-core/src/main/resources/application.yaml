@@ -1,0 +1,48 @@
+server:
+  context-path: /
+  port: 8201
+  tomcat:
+    access_log_enabled: true
+eureka:
+  instance:
+    hostname: project
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8.0.
+  application:
+    name: project-service    
+ 
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource  
+    url: jdbc:mysql://mysql:3306/project_service?characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    minIdle: 1  
+    maxActive: 10  
+    initialSize: 1  
+    timeBetweenEvictionRunsMillis: 3000  
+    minEvictableIdleTimeMillis: 300000  
+    validationQuery: SELECT 1 
+    testWhileIdle: true  
+    testOnBorrow: false  
+    testOnReturn: false 
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+          
+swagger:
+  basePackage: com.github.project.core.web
+  title: 项目管理 RESTful API
+  desc: 项目管理 RESTFUL API
+  serviceUrl: http://www.galaxyinternet.com
+  version: 1.0

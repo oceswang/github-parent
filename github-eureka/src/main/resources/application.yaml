@@ -1,0 +1,19 @@
+server:
+  port: 8761
+eureka:
+  instance:
+    hostname: eureka
+    preferIpAddress: true #true代表注册自身的ip地址 而不是主机名称
+  client:
+    registerWithEureka: true #是否注册到服务，单节点不需要开启
+    fetchRegistry: false #表示是否从Eureka Server 中获得注册信息，但节点不需要开启
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8
+  application:
+    name: eureka-service     
+ 

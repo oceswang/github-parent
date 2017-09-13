@@ -1,0 +1,18 @@
+info:
+  version: 1.0
+server:
+  port: 8080
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8.0.
+  application:
+    name: admin
+eureka:
+  instance:
+    hostname: admin
+    preferIpAddress: true 
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka   

@@ -1,0 +1,26 @@
+server:
+  context-path: /
+  port: 8769
+  tomcat:
+    access_log_enabled: true
+eureka:
+  instance:
+    hostname: turbine
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8.0.
+  application:
+    name: turbine-service    
+
+turbine:
+  aggregator: 
+    clusterConfig: USER-SERVICE,PROJECT-SERVICE
+  appConfig: user-service,project-service
+  #clusterNameExpression: new String("default")
+  
