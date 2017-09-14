@@ -80,7 +80,7 @@ public class MainController
 			{
 				if(!checkLogin(request,response))
 				{
-					return "/page-login";
+					return "/login_bg";
 				}
 			}
 			user = (UserDTO)request.getSession(true).getAttribute(SSOConstants.SESSION_USER_LOGIN);
