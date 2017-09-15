@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.github.common.entity.AuditEntity;
@@ -51,6 +52,9 @@ public class User extends AuditEntity
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JoinTable(name = "t_user_client", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "client_id"))
 	private Set<Client> clients;
+	
+	@OneToMany(mappedBy = "user")
+	private Set<UsersRoles> usersRoles;
 
 	public Long getId()
 	{
@@ -151,5 +155,16 @@ public class User extends AuditEntity
 	{
 		this.clients = clients;
 	}
+
+	public Set<UsersRoles> getUsersRoles()
+	{
+		return usersRoles;
+	}
+
+	public void setUsersRoles(Set<UsersRoles> usersRoles)
+	{
+		this.usersRoles = usersRoles;
+	}
+	
 
 }

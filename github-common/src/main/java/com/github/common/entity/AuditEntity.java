@@ -8,13 +8,13 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class AuditEntity {
 
-	@Column(name="created_time")
+	@Column(name="created_time", updatable = false)
 	private LocalDateTime createdTime;
 	
 	@Column(name="updated_time")
 	private LocalDateTime updatedTime;
 	
-	@Column(name="created_id")
+	@Column(name="created_id", updatable = false)
 	private Long createdId;
 	
 	@Column(name="updated_id")
