@@ -1,5 +1,7 @@
 package com.github.user.core.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,7 +28,7 @@ public class Resource
 	private String resourceDesc;
 	
 	@OneToMany(mappedBy="resource")
-	private RolesResources rolesResources;
+	private Set<RolesResources> rolesResources;
 
 	public Long getId()
 	{
@@ -67,8 +69,14 @@ public class Resource
 	{
 		this.resourceDesc = resourceDesc;
 	}
-	
-	
-	
-	
+
+	public Set<RolesResources> getRolesResources()
+	{
+		return rolesResources;
+	}
+
+	public void setRolesResources(Set<RolesResources> rolesResources)
+	{
+		this.rolesResources = rolesResources;
+	}
 }

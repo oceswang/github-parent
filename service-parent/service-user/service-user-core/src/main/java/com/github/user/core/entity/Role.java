@@ -1,5 +1,7 @@
 package com.github.user.core.entity;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,10 +30,10 @@ public class Role extends AuditEntity
 	private String roleDesc;
 	
 	@OneToMany(mappedBy="role")
-	private UsersRoles usersRoles;
+	private Set<UsersRoles> usersRoles;
 	
 	@OneToMany(mappedBy="role")
-	private RolesResources rolesResources;
+	private Set<RolesResources> rolesResources;
 
 	public Long getId()
 	{
@@ -73,26 +75,25 @@ public class Role extends AuditEntity
 		this.roleDesc = roleDesc;
 	}
 
-	public UsersRoles getUsersRoles()
+	public Set<UsersRoles> getUsersRoles()
 	{
 		return usersRoles;
 	}
 
-	public void setUsersRoles(UsersRoles usersRoles)
+	public void setUsersRoles(Set<UsersRoles> usersRoles)
 	{
 		this.usersRoles = usersRoles;
 	}
 
-	public RolesResources getRolesResources()
+	public Set<RolesResources> getRolesResources()
 	{
 		return rolesResources;
 	}
 
-	public void setRolesResources(RolesResources rolesResources)
+	public void setRolesResources(Set<RolesResources> rolesResources)
 	{
 		this.rolesResources = rolesResources;
 	}
-	
-	
 
+	
 }

@@ -15,5 +15,8 @@ spring:
       preferredNetworks:
         - 10.8
   application:
-    name: eureka-service     
+    name: eureka-service  
+management:
+  security:
+    enabled: false       
  
