@@ -2,28 +2,37 @@ package com.github.user.core.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.common.exception.BusinessException;
+import com.github.user.core.dao.jpa.RoleDAO;
 import com.github.user.core.dao.jpa.UserDAO;
+import com.github.user.core.dao.jpa.UsersRolesDAO;
+import com.github.user.core.entity.Role;
 import com.github.user.core.entity.User;
+import com.github.user.core.entity.UsersRoles;
 
 @Service
 public class UserService
 {
 	@Autowired
 	private UserDAO dao;
+	@Autowired
+	private RoleDAO roleDAO;
+	@Autowired
+	private UsersRolesDAO usersRolesDAO;
 	
 	
 	@Transactional
@@ -59,9 +68,46 @@ public class UserService
 			
 	}
 	@Transactional
-	public User add(User user)
+	public User save(User user)
 	{
 		return dao.save(user);
+	}
+	@Transactional
+	public User findOne(Long id)
+	{
+		return dao.findOne(id);
+	}
+	@Transactional
+	public User delUsersRoles(Long userId, Long... roleIds)
+	{
+		User user = dao.findOne(userId);
+		user.getUsersRoles().stream().forEach( ur -> {
+			Arrays.asList(roleIds).stream().forEach(roleId -> {
+				if(roleId.equals(ur.getRole().getId()))
+				{
+					usersRolesDAO.delete(ur.getId());
+				}
+			});
+		});
+		return user;
+	}
+	@Transactional
+	public User addUsersRoles(Long userId, Long... roleIds)
+	{
+		User user = dao.findOne(userId);
+		usersRolesDAO.delete(user.getUsersRoles());
+		Arrays.asList(roleIds).stream().forEach(roleId -> {
+			Role role = roleDAO.findOne(roleId);
+			if(role != null)
+			{
+				UsersRoles item = new UsersRoles();
+				item.setRole(role);
+				item.setUser(user);
+				usersRolesDAO.save(item);
+			}
+		});
+		
+		return user;
 	}
 	
 	

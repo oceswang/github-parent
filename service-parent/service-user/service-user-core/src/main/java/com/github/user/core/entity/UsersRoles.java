@@ -8,11 +8,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.github.common.entity.AuditEntity;
-
 @Entity
 @Table(name = "t_users_roles")
-public class UsersRoles extends AuditEntity
+public class UsersRoles 
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

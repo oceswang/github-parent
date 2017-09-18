@@ -39,12 +39,10 @@ public class UserController
 	{
 		return "success";
 	}
-	
 	public String addFallback()
 	{
 		return "fall";
 	}
-	
 	private UserDTO convert(User user)
 	{
 		if(user == null)
@@ -55,4 +53,5 @@ public class UserController
 		BeanUtils.copyProperties(user, dto);
 		return dto;
 	}
+	
 }

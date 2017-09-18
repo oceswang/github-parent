@@ -1,5 +1,6 @@
 package com.github.user.core.entity;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -14,8 +15,13 @@ import com.github.common.entity.AuditEntity;
 
 @Entity
 @Table(name = "t_role")
-public class Role extends AuditEntity
+public class Role extends AuditEntity implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
