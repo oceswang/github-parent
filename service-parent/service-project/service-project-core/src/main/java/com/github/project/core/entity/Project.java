@@ -13,6 +13,11 @@ import com.github.common.entity.AuditEntity;
 @Table(name = "t_project")
 public class Project extends AuditEntity
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

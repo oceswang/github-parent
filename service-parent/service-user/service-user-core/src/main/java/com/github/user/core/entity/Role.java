@@ -1,6 +1,5 @@
 package com.github.user.core.entity;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -15,7 +14,7 @@ import com.github.common.entity.AuditEntity;
 
 @Entity
 @Table(name = "t_role")
-public class Role extends AuditEntity implements Serializable
+public class Role extends AuditEntity 
 {
 	/**
 	 * 

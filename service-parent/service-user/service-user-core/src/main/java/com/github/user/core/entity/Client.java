@@ -17,6 +17,11 @@ import com.github.common.entity.AuditEntity;
 @Table(name = "t_client")
 public class Client extends AuditEntity
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

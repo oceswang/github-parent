@@ -14,8 +14,6 @@ import org.springframework.util.Assert;
 
 import com.github.user.core.UserApplication;
 import com.github.user.core.entity.Role;
-import com.github.user.core.entity.User;
-import com.github.user.core.entity.UsersRoles;
 import com.github.user.core.service.RoleService;
 import com.github.user.core.service.UserService;
 
@@ -51,4 +49,5 @@ public class RoleServiceTest
 		userService.addUsersRoles(2L, 3L, 4L);
 		
 	}
+	
 }

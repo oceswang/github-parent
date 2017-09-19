@@ -10,10 +10,17 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.github.common.entity.AuditEntity;
+
 @Entity
 @Table(name = "t_resource")
-public class Resource
+public class Resource extends AuditEntity
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
