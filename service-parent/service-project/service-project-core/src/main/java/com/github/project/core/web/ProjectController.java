@@ -1,5 +1,7 @@
 package com.github.project.core.web;
 
+import java.time.LocalTime;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.event.service.EventService;
 import com.github.project.api.dto.ProjectDTO;
+import com.github.project.api.event.ProjectCreatedEvent;
+import com.github.project.api.event.ProjectUpdatedEvent;
 import com.github.project.core.entity.Project;
 import com.github.project.core.service.ProjectService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -23,6 +28,8 @@ public class ProjectController
 {
 	@Autowired
 	ProjectService projectService;
+	@Autowired
+	EventService eventService;
 
 	@ApiOperation(value = "保存项目")
 	@ApiImplicitParams(value = { @ApiImplicitParam(name = "dto", value = "项目信息", dataType = "ProjectDTO") })
@@ -30,6 +37,20 @@ public class ProjectController
 	public ProjectDTO save(@RequestBody ProjectDTO dto)
 	{
 		Project entity = projectService.save(dto);
+		if(dto.getId() != null)
+		{
+			ProjectCreatedEvent event = new ProjectCreatedEvent();
+			event.setProjectId(entity.getId());
+			event.setEventTime(LocalTime.now());
+			eventService.publish(event);
+		}
+		else
+		{
+			ProjectUpdatedEvent event = new ProjectUpdatedEvent();
+			event.setProjectId(entity.getId());
+			event.setEventTime(LocalTime.now());
+			eventService.publish(event);
+		}
 		ProjectDTO rtn = new ProjectDTO();
 		BeanUtils.copyProperties(entity, rtn);
 		return rtn;

@@ -1,139 +1,178 @@
 package com.github.event.service;
 
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.binding.BinderAwareChannelResolver;
+import org.springframework.cloud.stream.messaging.Processor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.common.utils.JsonUtils;
 import com.github.event.config.EventTypeRegistry;
-import com.github.event.constants.EventStatus;
-import com.github.event.constants.EventType;
-import com.github.event.dao.jpa.EventProcessDAO;
-import com.github.event.dao.jpa.EventPublishDAO;
-import com.github.event.entity.BaseEvent;
 import com.github.event.entity.EventProcess;
+import com.github.event.entity.EventProcessStatus;
 import com.github.event.entity.EventPublish;
+import com.github.event.entity.EventPublishStatus;
 import com.github.event.handler.EventHandler;
-import com.rabbitmq.client.Channel;
+import com.github.utils.event.constants.EventType;
+import com.github.utils.event.entity.BaseEvent;
 
 @Service
-public class EventService implements ChannelAwareMessageListener
-{
+public class EventService {
 	private static final Logger logger = LoggerFactory.getLogger(EventService.class);
 	@Autowired
-	private EventPublishDAO publishDAO;
+	BinderAwareChannelResolver binderAwareChannelResolver;
 	@Autowired
-	private EventProcessDAO processDAO;
+	EventPublishService eventPublishService;
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	EventProcessService eventProcessServcie;
 	@Autowired
-	private EventTypeRegistry eventTypeRegistry;
-
+	EventTypeRegistry eventTypeRegistry;
+	@Autowired
+	TaskExecutor taskExecutor;
+	
+	@StreamListener(Processor.INPUT)
+	public void receive(Message<byte[]> msg)
+	{
+		byte[] bytes = msg.getPayload();
+		String message = new String(bytes);
+		logger.debug(new String(bytes));
+		try
+		{
+			receive(message);
+		} catch (DataIntegrityViolationException e)
+		{
+			logger.error(String.format("保存EventProcess失败,Message=[%s]",message),e);
+		}
+		catch (Exception e)
+		{
+			logger.error(String.format("保存EventProcess失败,Message=[%s]",message),e);
+			throw e;
+		}
+		
+	}
+	
+	public boolean send(String message, String destination)
+	{
+		MessageChannel messageChannel = binderAwareChannelResolver.resolveDestination(destination);
+        byte[] payload = message.getBytes(Charset.forName("UTF-8"));
+        return messageChannel.send(MessageBuilder.withPayload(payload).build(), 1000L);
+	}
+	
+	
 	@Transactional
-	public EventPublish publish(BaseEvent event)
+	public void publish(BaseEvent event)
 	{
 		event.setEventId(UUID.randomUUID().toString());
 		EventPublish eventPublish = new EventPublish();
 		eventPublish.setCreatedTime(LocalDateTime.now());
-		eventPublish.setStatus(EventStatus.NEW);
+		eventPublish.setStatus(EventPublishStatus.NEW);
 		eventPublish.setPayload(JsonUtils.object2Json(event));
 		eventPublish.setEventId(event.getEventId());
 		eventPublish.setType(event.getEventType());
-		return publishDAO.save(eventPublish);
+		eventPublishService.save(eventPublish);
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	@Override
 	@Transactional
-	public void onMessage(Message message, Channel channel) throws Exception
+	public EventProcess receive(String message)
 	{
-		byte[] bytes = message.getBody();
-		String msg = new String(bytes);
-		logger.debug(String.format("Message: %s, Channel: %s", msg, channel));
-		Map<String, Object> map = JsonUtils.json2Object(msg, Map.class);
-		if (map != null && map.containsKey("eventType"))
+		Map<String,Object> map = JsonUtils.json2Object(message, Map.class);
+		if(map != null && map.containsKey("eventType"))
 		{
 			EventType eventType = EventType.valueOf((String) map.get("eventType"));
 			EventProcess process = new EventProcess();
-			process.setEventId((String) map.get("eventId"));
+			process.setEventId((String)map.get("eventId"));
 			process.setType(eventType);
-			process.setStatus(EventStatus.RECEIVED);
-			process.setPayload(msg);
-			processDAO.save(process);
+			process.setStatus(EventProcessStatus.NEW);
+			process.setPayload(message);
+			process.setVersion(1);
+			return eventProcessServcie.save(process);
 		}
-		channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-
+		return null;
 	}
-
+	
 	@Transactional
-	public void publishEvent()
+	public void sendUnpublishEvent()
 	{
-		List<EventPublish> list = publishDAO.getByStatus(EventStatus.NEW);
-		list.stream().forEach(item -> {
-			executeEventHandler(() -> {
-				item.setStatus(EventStatus.PUBLISHED);
-				Message message = new Message(item.getPayload().getBytes(), new MessageProperties());
-				publishDAO.save(item);
-				rabbitTemplate.send(item.getType().name(), "", message);
-				return item;
-			});
+		List<EventPublish> list = eventPublishService.findUnpublishedEvent();
+		list.stream().forEach( item -> {
+			send(item.getPayload(),item.getType().name());
+			item.setStatus(EventPublishStatus.PUBLISHED);
+			eventPublishService.save(item);
 		});
 	}
-
-
 	@Transactional
-	public void processEvent()
+	public void handleUnprocedssEvent()
 	{
-		List<EventProcess> list = processDAO.getByStatus(EventStatus.RECEIVED);
-		list.stream().forEach(item -> {
-			EventType type = item.getType();
-			EventHandler<BaseEvent> handler = eventTypeRegistry.getHandler(type);
-			if (handler == null)
-			{
-				item.setStatus(EventStatus.IGNORED);
-				processDAO.saveAndFlush(item);
-				return;
-			}
-			executeEventHandler(() -> {
-				BaseEvent event = eventTypeRegistry.getEvent(type, item.getPayload());
-				handler.handle(event);
-				return null;
+		List<EventProcess> list = eventProcessServcie.findByStatus(EventProcessStatus.NEW);
+		CountDownLatch latch = new CountDownLatch(list.size());
+		for(EventProcess item : list)
+		{
+			taskExecutor.execute(() -> {
+				try
+				{
+					int update = eventProcessServcie.updateWithLock(item.getVersion(), item.getId());
+					if(update>0)
+					{
+						item.setVersion(item.getVersion()+1);
+						BaseEvent event = eventTypeRegistry.getEvent(item.getType(), item.getPayload());
+						EventHandler<BaseEvent> handler = eventTypeRegistry.getHandler(item.getType());
+						//不存在handler，状态-ignore
+						if(handler == null)
+						{
+							logger.debug("Ignore event - "+item.getId());
+							item.setStatus(EventProcessStatus.IGNORED);
+							eventProcessServcie.save(item);
+							return;
+						}
+						executeEventHandler(() -> {
+							handler.handle(event);
+							return null;
+						} );
+						//处理完成，状态-Processed
+						item.setStatus(EventProcessStatus.PROCESSED);
+						eventProcessServcie.save(item);
+					}
+				} catch (Exception e)
+				{
+					logger.error("处理事件异常, ID="+item.getId(),e);
+				}
+				finally
+				{
+					latch.countDown();
+				}
 			});
-			item.setStatus(EventStatus.PROCESSED);
-			processDAO.saveAndFlush(item);
-		});
+		}
+		try
+		{
+			latch.await();
+		} catch (InterruptedException e)
+		{
+			logger.error("Thread Error",e);
+		}
 	}
-
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public <T> T executeEventHandler(Supplier<T> supplier)
-	{
-		return supplier.get();
-	}
-	
-	@Scheduled(fixedRate = 500L)
-	public void publisTask()
-	{
-		publishEvent();
-	}
-	
-	@Scheduled(fixedRate = 500L)
-	public void processTask()
-	{
-		processEvent();
-	}
+    public <T> T executeEventHandler(Supplier<T> supplier){
+
+        return supplier.get();
+
+    }
 
 }

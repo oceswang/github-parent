@@ -79,6 +79,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github</groupId>
+			<artifactId>github-event</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github</groupId>
 			<artifactId>service-user-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -12,8 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.github.common.entity.LockEntity;
-import com.github.event.constants.EventStatus;
-import com.github.event.constants.EventType;
+import com.github.utils.event.constants.EventType;
 @Entity
 @Table(name="t_event_publish")
 public class EventPublish extends LockEntity{
@@ -24,7 +23,7 @@ public class EventPublish extends LockEntity{
 	
 	@Column(name="event_status")
 	@Enumerated(EnumType.STRING)
-	private EventStatus status;
+	private EventPublishStatus status;
 	
 	@Column
 	private String payload;
@@ -47,11 +46,11 @@ public class EventPublish extends LockEntity{
 		this.id = id;
 	}
 
-	public EventStatus getStatus() {
+	public EventPublishStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(EventStatus status) {
+	public void setStatus(EventPublishStatus status) {
 		this.status = status;
 	}
 

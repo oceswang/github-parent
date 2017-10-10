@@ -1,6 +1,6 @@
-package com.github.event.entity;
+package com.github.utils.event.entity;
 
-import com.github.event.constants.EventType;
+import com.github.utils.event.constants.EventType;
 
 public abstract class BaseEvent
 {
@@ -17,4 +17,7 @@ public abstract class BaseEvent
 	{
 		this.eventId = eventId;
 	}
+	
+	
+
 }

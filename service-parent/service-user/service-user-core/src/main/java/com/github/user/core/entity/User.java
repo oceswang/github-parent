@@ -55,7 +55,7 @@ public class User extends AuditEntity
 	private String openId;
 	
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "t_user_client", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "client_id"))
+	@JoinTable(name = "t_users_clients", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "client_id"))
 	private Set<Client> clients;
 	
 	@OneToMany(mappedBy = "user")

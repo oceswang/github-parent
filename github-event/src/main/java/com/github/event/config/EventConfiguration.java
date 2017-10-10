@@ -1,84 +1,63 @@
 package com.github.event.config;
 
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.binder.BinderFactory;
+import org.springframework.cloud.stream.binding.AbstractBindingTargetFactory;
+import org.springframework.cloud.stream.binding.BinderAwareChannelResolver;
+import org.springframework.cloud.stream.binding.BindingService;
+import org.springframework.cloud.stream.binding.DynamicDestinationsBindable;
+import org.springframework.cloud.stream.config.BindingServiceProperties;
+import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.github.common.spring.ApplicationContextHolder;
-
+import com.github.event.scheduler.EventScheduler;
+import com.github.event.spring.stream.CustomBindingService;
 
 @Configuration
-@EnableScheduling
-@PropertySource("rmq.properties")
+@EnableBinding(Processor.class)
 public class EventConfiguration
 {
-	@Value("${rmq.addresses}")
-	private String addresses;
-	@Value("${rmq.virtualHost}")
-	private String virtualHost;
-	@Value("${rmq.username}")
-	private String userName;
-	@Value("${rmq.password}")
-	private String password;
-	@Value("${rmq.group}")
-	private String group;
-	@Bean
-	public ApplicationContextHolder applicationContextHolder() {
-        return ApplicationContextHolder.getInstance();
-    }
+
 	
 	@Bean
 	public EventTypeRegistry eventRegistry()
 	{
 		return new EventTypeRegistry();
 	}
+
 	@Bean
-	public ConnectionFactory connectionFactory()
+	public BindingService bindingService(BindingServiceProperties bindingServiceProperties, BinderFactory binderFactory, EventTypeRegistry eventRegistry)
 	{
-		CachingConnectionFactory cf = new CachingConnectionFactory();
-		cf.setAddresses(addresses);
-		cf.setUsername(userName);
-		cf.setPassword(password);
-		cf.setVirtualHost(virtualHost);
-		cf.setPublisherConfirms(true);
-		cf.setChannelCacheSize(20);
-		return cf;
+		return new CustomBindingService(bindingServiceProperties, binderFactory, eventRegistry);
 	}
 
 	@Bean
-	public ProducerEndpoint producerEndpoint()
+	public BinderAwareChannelResolver binderAwareChannelResolver(
+			BindingService bindingService, 
+			AbstractBindingTargetFactory<? extends MessageChannel> bindingTargetFactory,
+			DynamicDestinationsBindable dynamicDestinationsBindable)
 	{
-		return new ProducerEndpoint(eventRegistry(), connectionFactory(), group);
+		return new BinderAwareChannelResolver(bindingService, bindingTargetFactory, dynamicDestinationsBindable);
 	}
 	
-	@Bean
-	public ConsumerEndpoint cunsumerEndpoint()
+	@Bean 
+	public EventScheduler eventScheduler()
 	{
-		return new ConsumerEndpoint(eventRegistry(), connectionFactory(), group); 
+		return new EventScheduler();
 	}
-	
-	@Bean
-	public RabbitTemplate rabbitTemplate()
+	@Bean 
+	public TaskExecutor taskExecutor()
 	{
-		return new RabbitTemplate(connectionFactory());
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(10000);
+        executor.setThreadNamePrefix("EventExecutor-");
+        executor.initialize();
+        return executor;
 	}
-	
-	@Bean
-	public TaskScheduler taskScheduler()
-	{
-		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-		taskScheduler.initialize();
-		taskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors());
-		taskScheduler.setThreadNamePrefix("EventExecutor-");
-		return taskScheduler;
-	}
-	
-	
 }

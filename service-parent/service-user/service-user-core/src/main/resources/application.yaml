@@ -21,6 +21,26 @@ spring:
     inetutils:
       preferredNetworks:
         - 10.8.0.
+    stream:
+      bindings:
+        input:
+          binder: rabbit1
+          group: user
+        output:
+          group: user
+          binder: rabbit1
+      binders:
+        rabbit1:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: rabbit
+                port: 5672
+                username: cloud
+                password: cloud
+                virtualHost: cloud
+                        
   application:
     name: user-service    
  
@@ -40,12 +60,12 @@ spring:
     testOnBorrow: false  
     testOnReturn: false 
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         hbm2ddl:
           auto: none
-          
+            
 swagger:
   basePackage: com.github.user.core.web
   title: 用户管理 RESTful API

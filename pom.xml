@@ -48,5 +48,6 @@
 		<module>github-admin</module>
 		<module>github-turbine</module>
 		<module>github-event</module>
+		<module>github-utils</module>
 	</modules>
 </project>

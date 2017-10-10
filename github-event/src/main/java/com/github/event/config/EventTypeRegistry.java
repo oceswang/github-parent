@@ -15,9 +15,9 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import com.github.common.utils.JsonUtils;
-import com.github.event.constants.EventType;
-import com.github.event.entity.BaseEvent;
 import com.github.event.handler.EventHandler;
+import com.github.utils.event.constants.EventType;
+import com.github.utils.event.entity.BaseEvent;
 
 public class EventTypeRegistry implements InitializingBean
 {
