@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github</groupId>
-		<artifactId>service-parent</artifactId>
+		<artifactId>business-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>service-gateway</artifactId>
-	<name>service-gateway</name>
+	<artifactId>business-gateway</artifactId>
+	<name>business-gateway</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

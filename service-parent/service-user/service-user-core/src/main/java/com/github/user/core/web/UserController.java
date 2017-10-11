@@ -2,6 +2,9 @@ package com.github.user.core.web;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,14 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.user.api.dto.UserDTO;
 import com.github.user.core.entity.User;
 import com.github.user.core.service.UserService;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController
 {
 	@Autowired
@@ -33,12 +35,27 @@ public class UserController
 		User user = userService.login(login, password);
 		return convert(user);
 	}
-	@RequestMapping(value="/add",method=RequestMethod.GET)
-	@HystrixCommand(fallbackMethod="addFallback")
-	public String add()
+	@RequestMapping(value="/",method=RequestMethod.GET)
+	public ResponseEntity query(@RequestBody UserDTO dto)
 	{
-		return "success";
+		return null;
 	}
+	@RequestMapping(value="/",method=RequestMethod.POST)
+	public ResponseEntity add(@RequestBody UserDTO dto)
+	{
+		return null;
+	}
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	public ResponseEntity getById(@PathVariable Long id)
+	{
+		return null;
+	}
+	@RequestMapping(value="/{id}",method=RequestMethod.POST)
+	public ResponseEntity update(@PathVariable Long id)
+	{
+		return null;
+	}
+	
 	public String addFallback()
 	{
 		return "fall";

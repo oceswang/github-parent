@@ -20,6 +20,5 @@
   <modules>
     <module>service-user</module>
     <module>service-project</module>
-    <module>service-gateway</module>
   </modules>
 </project>

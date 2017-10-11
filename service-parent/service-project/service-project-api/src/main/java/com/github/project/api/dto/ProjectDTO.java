@@ -4,95 +4,76 @@ public class ProjectDTO {
 	
 	private Long id;
 
+	private String code;
+	
 	private String name;
-
-	private String description;
 
 	private String line;
 	
-	private String lineDesc;
-
-	private String stage;
+	private String progress;
 	
-	private String stageDesc;
+	private String description;
 
-	private String status;
-	
-	private String statusDesc;
-
-	public Long getId() {
+	public Long getId()
+	{
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Long id)
+	{
 		this.id = id;
 	}
 
-	public String getName() {
+	public String getCode()
+	{
+		return code;
+	}
+
+	public void setCode(String code)
+	{
+		this.code = code;
+	}
+
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getLine() {
+	public String getLine()
+	{
 		return line;
 	}
 
-	public void setLine(String line) {
+	public void setLine(String line)
+	{
 		this.line = line;
 	}
 
-	public String getLineDesc() {
-		return lineDesc;
+	public String getProgress()
+	{
+		return progress;
 	}
 
-	public void setLineDesc(String lineDesc) {
-		this.lineDesc = lineDesc;
+	public void setProgress(String progress)
+	{
+		this.progress = progress;
 	}
 
-	public String getStage() {
-		return stage;
+	public String getDescription()
+	{
+		return description;
 	}
 
-	public void setStage(String stage) {
-		this.stage = stage;
+	public void setDescription(String description)
+	{
+		this.description = description;
 	}
 
-	public String getStageDesc() {
-		return stageDesc;
-	}
-
-	public void setStageDesc(String stageDesc) {
-		this.stageDesc = stageDesc;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getStatusDesc() {
-		return statusDesc;
-	}
-
-	public void setStatusDesc(String statusDesc) {
-		this.statusDesc = statusDesc;
-	}
-	
-	
 	
 	
 }

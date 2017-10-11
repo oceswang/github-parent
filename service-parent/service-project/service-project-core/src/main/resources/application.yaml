@@ -18,6 +18,25 @@ spring:
     inetutils:
       preferredNetworks:
         - 10.8.0.
+    stream:
+      bindings:
+        input:
+          binder: rabbit1
+          group: project
+        output:
+          group: project
+          binder: rabbit1
+      binders:
+        rabbit1:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: rabbit
+                port: 5672
+                username: cloud
+                password: cloud
+                virtualHost: cloud    
   application:
     name: project-service    
  

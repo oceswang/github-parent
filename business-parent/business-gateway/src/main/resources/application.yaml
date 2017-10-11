@@ -21,8 +21,8 @@ spring:
 zuul:
   routes:
     users:
-      path: /users/**
-      serviceId: user-service    
+      path: /mgt/**
+      serviceId: business-mgt    
     projects:
-      path: /projects/**  
-      serviceId: project-service
+      path: /sop/**  
+      serviceId: business-sop

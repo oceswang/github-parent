@@ -22,77 +22,80 @@ public class Project extends AuditEntity
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(name = "code")
+	private String code;
+	
 	@Column(name = "name")
 	private String name;
 
+	@Column(name = "line")
+	private String line;
+	
+	@Column(name = "progress")
+	private String progress;
+	
 	@Column(name = "description")
 	private String description;
 
-	@Column(name = "line")
-	private String line;
-
-	@Column(name = "stage")
-	private String stage;
-
-	@Column(name = "status")
-	private String status;
-
-	@Column(name = "active")
-	private Byte active;
-
-	public Long getId() {
+	public Long getId()
+	{
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Long id)
+	{
 		this.id = id;
 	}
 
-	public String getName() {
+	public String getCode()
+	{
+		return code;
+	}
+
+	public void setCode(String code)
+	{
+		this.code = code;
+	}
+
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getLine() {
+	public String getLine()
+	{
 		return line;
 	}
 
-	public void setLine(String line) {
+	public void setLine(String line)
+	{
 		this.line = line;
 	}
 
-	public String getStage() {
-		return stage;
+	public String getProgress()
+	{
+		return progress;
 	}
 
-	public void setStage(String stage) {
-		this.stage = stage;
+	public void setProgress(String progress)
+	{
+		this.progress = progress;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getDescription()
+	{
+		return description;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setDescription(String description)
+	{
+		this.description = description;
 	}
 
-	public Byte getActive() {
-		return active;
-	}
-
-	public void setActive(Byte active) {
-		this.active = active;
-	}
+	
 }

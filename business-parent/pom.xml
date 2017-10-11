@@ -20,5 +20,6 @@
   <modules>
     <module>business-sop</module>
     <module>business-mgt</module>
+	<module>business-gateway</module>
   </modules>
 </project>
