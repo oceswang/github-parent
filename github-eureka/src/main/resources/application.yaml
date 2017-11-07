@@ -1,5 +1,5 @@
 server:
-  port: ${EUREKA1_PORT:8761}
+  port: 8761
 eureka:
   instance:
     hostname: eureka
@@ -8,7 +8,7 @@ eureka:
     registerWithEureka: true #是否注册到服务，单节点不需要开启
     fetchRegistry: false #表示是否从Eureka Server 中获得注册信息，但节点不需要开启
     serviceUrl:
-      defaultZone: http://${EUREKA2_NAME:localhost}:${EUREKA2_PORT:8761}/eureka/
+      defaultZone: ${EUREKA_SERVERS}
 spring:
   application:
     name: eureka-service  
