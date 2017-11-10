@@ -4,10 +4,6 @@ info:
 server:
   port: 8080
 spring:
-  cloud:
-    inetutils:
-      preferredNetworks:
-        - 10.8.0.
   application:
     name: admin
 eureka:
@@ -16,7 +12,7 @@ eureka:
     preferIpAddress: true 
   client:
     serviceUrl:
-      defaultZone: http://eureka:8761/eureka   
+      defaultZone: ${DEFAULT_ZONE:http://eureka:8761/eureka}   
 
 management:
   security:
