@@ -1,0 +1,60 @@
+debug: false
+server:
+  context-path: /oauth
+  port: 80
+  tomcat:
+    access_log_enabled: true
+eureka:
+  instance:
+    hostname: sso
+    preferIpAddress: true 
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:8761/eureka
+
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 10.8.0. 
+  application:
+    name: sso-service
+  
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource  
+    url: jdbc:mysql://mysql:3306/account_service?characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    minIdle: 1  
+    maxActive: 10  
+    initialSize: 1  
+    timeBetweenEvictionRunsMillis: 3000  
+    minEvictableIdleTimeMillis: 300000  
+    validationQuery: SELECT 1 
+    testWhileIdle: true  
+    testOnBorrow: false  
+    testOnReturn: false 
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+          
+  redis:
+    database: 0
+    host: redis
+    port: 6379
+    
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    content-type: text/html
+    cache: false    
+swagger:
+  basePackage: com.github.sso.core.web
+  title: SSO RESTful API
+  desc: SSO RESTFUL API
+  serviceUrl: http://www.galaxyinternet.com
+  version: 1.0
